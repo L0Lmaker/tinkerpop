@@ -256,4 +256,3 @@ jobs:
         working-directory: ./gremlin-go
         run: go vet ./...
 
-
