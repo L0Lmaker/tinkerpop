@@ -159,8 +159,7 @@ jobs:
           mvn verify -pl :gremlin-javascript,:gremlint -DincludeNeo4j
           
           
-          
-                                   
+                                             
 
 #  python:
 #    name: python
