@@ -34,15 +34,15 @@ jobs:
         with:
           dotnet-version: '6.0.x'
       - name: Create .glv files - Windows
-        if: if matrix.os == 'windows-latest'
         run: |
           echo $null >> gremlin-dotnet/src/.glv
           echo $null >> gremlin-dotnet/test/.glv
+        if: if matrix.os == 'windows-latest'
       - name: Create .glv files - Windows
-        if: if matrix.os == 'ubuntu-latest'
         run: |
           touch gremlin-dotnet/src/.glv
           touch gremlin-dotnet/test/.glv
+        if: if matrix.os == 'ubuntu-latest'
       - name: Build with Maven
         run: |
           mvn clean install -pl -:gremlin-javascript,-:gremlin-python,-:gremlint -q -DskipTests -Dci
