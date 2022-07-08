@@ -33,14 +33,14 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: '6.0.x'
-      - if: if matrix.os == 'windows-latest'
       - name: Create .glv files - Windows
         run: |
+      - if: if matrix.os == 'windows-latest'
           echo $null >> gremlin-dotnet/src/.glv
           echo $null >> gremlin-dotnet/test/.glv
-      - if: if matrix.os == 'ubuntu-latest'
       - name: Create .glv files - Windows
         run: |
+      - if: if matrix.os == 'ubuntu-latest'
           touch gremlin-dotnet/src/.glv
           touch gremlin-dotnet/test/.glv
       - name: Build with Maven
