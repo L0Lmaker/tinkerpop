@@ -38,7 +38,7 @@ jobs:
         run: |
           echo $null >> gremlin-dotnet/src/.glv
           echo $null >> gremlin-dotnet/test/.glv
-      - name: Create .glv files - Windows
+      - name: Create .glv files - Ubuntu
         if: contains(matrix.os, 'ubuntu')
         run: |
           touch gremlin-dotnet/src/.glv
