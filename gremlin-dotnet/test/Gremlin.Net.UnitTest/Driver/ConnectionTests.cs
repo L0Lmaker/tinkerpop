@@ -134,7 +134,7 @@ namespace Gremlin.Net.UnitTest.Driver
         public async Task ShouldHandleCloseMessageForInFlightRequestsAsync()
         {
             // Tests that in-flight requests will get notified if a connection close message is received.
-            Uri uri = new Uri("wss://localhost:8182");
+            Uri uri = new Uri("wss://127.0.0.1:8182");
             WebSocketReceiveResult closeResult = new WebSocketReceiveResult(0, WebSocketMessageType.Close, true, WebSocketCloseStatus.EndpointUnavailable, "Server shutdown");
 
             var receiveSempahore = new SemaphoreSlim(0, 1);
