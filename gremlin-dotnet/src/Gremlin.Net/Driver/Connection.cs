@@ -81,13 +81,13 @@ namespace Gremlin.Net.Driver
 
         public bool IsOpen => _webSocketConnection.IsOpen && Volatile.Read(ref _connectionState) != Closed;
 
-        public Task<ResultSet<T>> SubmitAsync<T>(RequestMessage requestMessage)
+        public async Task<ResultSet<T>> SubmitAsync<T>(RequestMessage requestMessage)
         {
             var receiver = new ResponseHandlerForSingleRequestMessage<T>();
             _callbackByRequestId.GetOrAdd(requestMessage.RequestId, receiver);
             _writeQueue.Enqueue(requestMessage);
             BeginSendingMessages();
-            return receiver.Result;
+            return await receiver.Result;
         }
 
         private void BeginReceiving()

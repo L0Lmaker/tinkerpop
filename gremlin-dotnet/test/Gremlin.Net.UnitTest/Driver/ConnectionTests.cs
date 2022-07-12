@@ -75,8 +75,6 @@ namespace Gremlin.Net.UnitTest.Driver
             // Assert that both requests get notified with the closed exception.
             await AssertExpectedConnectionClosedException(closeResult.CloseStatus, closeResult.CloseStatusDescription, () => request1);
             await AssertExpectedConnectionClosedException(closeResult.CloseStatus, closeResult.CloseStatusDescription, () => request2);
-
-            await Task.Delay(100);
             
             Assert.False(connection.IsOpen);
             Assert.Equal(0, connection.NrRequestsInFlight);
