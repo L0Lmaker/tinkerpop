@@ -68,4 +68,3 @@ jobs:
           mvn verify -pl :gremlin-dotnet,:gremlin-dotnet-tests -P gremlin-dotnet -DincludeNeo4j
 
 
-
