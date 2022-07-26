@@ -34,4 +34,3 @@ jobs:
           mvn verify -pl :gremlin-javascript,:gremlint -DincludeNeo4j
 
 
-
