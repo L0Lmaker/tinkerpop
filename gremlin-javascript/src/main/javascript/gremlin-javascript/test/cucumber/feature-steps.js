@@ -23,6 +23,7 @@
 'use strict';
 
 const {Given, Then, When} = require('cucumber');
+const {performance} = require('perf_hooks');
 const expect = require('chai').expect;
 const util = require('util');
 const gremlin = require('./gremlin').gremlin;
@@ -122,7 +123,12 @@ Given(/^using the parameter (.+) defined as "(.+)"$/, function (paramName, strin
 });
 
 When('iterated to list', function () {
-  return this.traversal.toList().then(list => this.result = list);
+  var startTime = performance.now();
+  var ret = this.traversal.toList().then(list => this.result = list);
+  var endTime = performance.now();
+  console.log(`Call to ${this.scenario} took ${endTime - startTime} milliseconds`)
+  return ret
+  // return this.traversal.toList().then(list => this.result = list);
 });
 
 When('iterated next', function () {
