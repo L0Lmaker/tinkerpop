@@ -127,7 +127,7 @@ const sleep = (milliseconds) => {
 
 When('iterated to list', async function () {
   // slowdown execution for GHA server, ConnectedComponent
-  await sleep(1);
+  await sleep(2);
   return this.traversal.toList().then(list => this.result = list);
 });
 
