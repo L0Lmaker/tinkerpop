@@ -121,7 +121,13 @@ Given(/^using the parameter (.+) defined as "(.+)"$/, function (paramName, strin
   });
 });
 
-When('iterated to list', function () {
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+When('iterated to list', async function () {
+  // slowdown execution for GHA server, ConnectedComponent
+  await sleep(1);
   return this.traversal.toList().then(list => this.result = list);
 });
 
