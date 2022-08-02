@@ -90,9 +90,14 @@ AfterAll(function () {
   return Promise.all(Object.keys(cache).map(graphName => cache[graphName].connection.close()));
 });
 
-Before(function (info) {
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+Before(async function (info) {
   this.scenario = info.pickle.name;
   this.cache = cache;
+  await sleep(50);
 });
 
 function getVertices(connection) {
