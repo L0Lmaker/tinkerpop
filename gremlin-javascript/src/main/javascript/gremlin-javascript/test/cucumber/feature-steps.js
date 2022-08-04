@@ -122,7 +122,11 @@ Given(/^using the parameter (.+) defined as "(.+)"$/, function (paramName, strin
 });
 
 When('iterated to list', function () {
-  return this.traversal.toList().then(list => this.result = list);
+  let start = performance.now();
+  return this.traversal.toList().then(list => {
+    this.result = list;
+    console.log(`${this.scenario} took ${performance.now()-start}ms to finish`);
+  });
 });
 
 When('iterated next', function () {
