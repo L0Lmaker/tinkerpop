@@ -254,18 +254,18 @@ limitations under the License.
                             <failOnError>true</failOnError>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>npm test gherkin features</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${skipTests}</skip>
-                            <arguments>run-script features</arguments>
-                            <failOnError>true</failOnError>
-                        </configuration>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>npm test gherkin features</id>-->
+<!--                        <phase>integration-test</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>npm</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <skip>${skipTests}</skip>-->
+<!--                            <arguments>run-script features</arguments>-->
+<!--                            <failOnError>true</failOnError>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
                 </executions>
                 <configuration>
                     <workingDirectory>src/main/javascript/gremlin-javascript</workingDirectory>
