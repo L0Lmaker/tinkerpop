@@ -22,6 +22,7 @@
  */
 'use strict';
 
+const performance = require('perf_hooks').performance;
 const {Given, Then, When} = require('cucumber');
 const expect = require('chai').expect;
 const util = require('util');
