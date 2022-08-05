@@ -22,6 +22,7 @@
  */
 'use strict';
 
+const performance = require("perf_hooks").performance;
 const Mocha = require('mocha');
 const assert = require('assert');
 const { AssertionError } = require('assert');
