@@ -30,7 +30,8 @@ const { Vertex } = require('../../lib/structure/graph');
 const { traversal } = require('../../lib/process/anonymous-traversal');
 const { GraphTraversalSource, GraphTraversal, statics } = require('../../lib/process/graph-traversal');
 const { SubgraphStrategy, ReadOnlyStrategy,
-        ReservedKeysVerificationStrategy, EdgeLabelVerificationStrategy } = require('../../lib/process/traversal-strategy');
+        ReservedKeysVerificationStrategy, EdgeLabelVerificationStrategy, VertexProgramStrategy
+} = require('../../lib/process/traversal-strategy');
 const Bytecode = require('../../lib/process/bytecode');
 const helper = require('../helper');
 const __ = statics;
@@ -289,6 +290,21 @@ describe('Traversal', function () {
         assert.ok(r);
         assert.strictEqual(r.value, 0);
       });
+    });
+  });
+  describe('ConnectedComponent', function () {
+    it('time connected component traversal', async function () {
+      let durations = [];
+      let g = traversal().withRemote(connection);
+      for (let i = 0; i < 100; i++) {
+        const start = performance.now();
+        let ret = await g.withStrategies(new VertexProgramStrategy({graphComputer: "org.apache.tinkerpop.gremlin.process.computer.GraphComputer"})).V().connectedComponent().has("gremlin.connectedComponentVertexProgram.component").toList();
+        const duration = performance.now() - start;
+        durations.push(duration);
+      }
+      console.log(durations);
+      const average = durations.reduce((a, b) => a + b, 0) / durations.length;
+      console.log(`Average: ${average}ms`);
     });
   });
 });
