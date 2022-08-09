@@ -54,6 +54,7 @@ public class Context {
     private final RequestContentType requestContentType;
     private final Object gremlinArgument;
     private final AtomicBoolean startedResponse = new AtomicBoolean(false);
+    private long startTime;
 
     /**
      * The type of the request as determined by the contents of {@link Tokens#ARGS_GREMLIN}.
@@ -89,6 +90,7 @@ public class Context {
         this.gremlinArgument = requestMessage.getArgs().get(Tokens.ARGS_GREMLIN);
         this.requestContentType = determineRequestContents();
         this.requestTimeout = determineTimeout();
+        this.startTime = System.currentTimeMillis();
     }
 
     /**
@@ -224,6 +226,7 @@ public class Context {
     private void writeAndMaybeFlush(final ResponseStatusCode code, final Object responseMessage, final boolean flush) {
         final boolean messageIsFinal = code.isFinalResponse();
         if (finalResponseWritten.compareAndSet(false, messageIsFinal)) {
+            System.out.println(requestMessage.getArgs().get("gremlin") + " time taken: " + (System.currentTimeMillis() - startTime));
             this.getChannelHandlerContext().write(responseMessage);
             if (flush) this.getChannelHandlerContext().flush();
         } else {
