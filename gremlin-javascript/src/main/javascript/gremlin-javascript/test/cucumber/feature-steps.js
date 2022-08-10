@@ -22,7 +22,9 @@
  */
 'use strict';
 
-const {Given, Then, When} = require('cucumber');
+const {Given, Then, When, setDefaultTimeout} = require('cucumber');
+// Timeout set to 10s to reduce occurrences of floating Cucumber Failures on GHA for Windows
+setDefaultTimeout(10 * 1000);
 const expect = require('chai').expect;
 const util = require('util');
 const gremlin = require('./gremlin').gremlin;
