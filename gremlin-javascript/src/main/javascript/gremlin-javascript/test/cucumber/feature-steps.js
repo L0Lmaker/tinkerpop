@@ -22,7 +22,8 @@
  */
 'use strict';
 
-const {Given, Then, When} = require('cucumber');
+const {Given, Then, When, setDefaultTimeout} = require('cucumber');
+setDefaultTimeout(10 * 1000);
 const chai = require('chai')
 chai.use(require('chai-string'));
 const expect = chai.expect;
