@@ -39,6 +39,19 @@ type connection struct {
 	protocol   protocol
 	results    *synchronizedMap
 	state      connectionState
+	stateMutex sync.Mutex
+}
+
+func (connection *connection) loadState() connectionState {
+	connection.stateMutex.Lock()
+	defer connection.stateMutex.Unlock()
+	return connection.state
+}
+
+func (connection *connection) storeState(state connectionState) {
+	connection.stateMutex.Lock()
+	defer connection.stateMutex.Unlock()
+	connection.state = state
 }
 
 type connectionSettings struct {
@@ -55,7 +68,7 @@ type connectionSettings struct {
 
 func (connection *connection) errorCallback() {
 	connection.logHandler.log(Error, errorCallback)
-	connection.state = closedDueToError
+	connection.storeState(closedDueToError)
 
 	// This callback is called from within protocol.readLoop. Therefore,
 	// it cannot wait for it to finish to avoid a deadlock.
@@ -65,20 +78,23 @@ func (connection *connection) errorCallback() {
 }
 
 func (connection *connection) close() error {
+	connection.stateMutex.Lock()
 	if connection.state != established {
+		connection.stateMutex.Unlock()
 		return newError(err0101ConnectionCloseError)
 	}
+	connection.state = closed
+	connection.stateMutex.Unlock()
 	connection.logHandler.log(Info, closeConnection)
 	var err error
 	if connection.protocol != nil {
 		err = connection.protocol.close(true)
 	}
-	connection.state = closed
 	return err
 }
 
 func (connection *connection) write(request *request) (ResultSet, error) {
-	if connection.state != established {
+	if connection.loadState() != established {
 		return nil, newError(err0102WriteConnectionClosedError)
 	}
 	connection.logHandler.log(Debug, writeRequest)
@@ -102,20 +118,19 @@ func (connection *connection) activeResults() int {
 //	closedDueToError: connection was closed internally due to an error.
 func createConnection(url string, logHandler *logHandler, connSettings *connectionSettings) (*connection, error) {
 	conn := &connection{
-		logHandler,
-		nil,
-		&synchronizedMap{map[string]ResultSet{}, sync.Mutex{}},
-		initialized,
+		logHandler: logHandler,
+		results:    &synchronizedMap{map[string]ResultSet{}, sync.Mutex{}},
+		state:      initialized,
 	}
 	logHandler.log(Info, connectConnection)
 	protocol, err := newGremlinServerWSProtocol(logHandler, Gorilla, url, connSettings, conn.results, conn.errorCallback)
 	if err != nil {
 		logHandler.logf(Warning, failedConnection)
-		conn.state = closedDueToError
+		conn.storeState(closedDueToError)
 		return nil, err
 	}
 	conn.protocol = protocol
-	conn.state = established
+	conn.storeState(established)
 	return conn, err
 }
 

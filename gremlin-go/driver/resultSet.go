@@ -56,6 +56,7 @@ type channelResultSet struct {
 	waitSignal       chan bool
 	channelMutex     sync.Mutex
 	waitSignalMutex  sync.Mutex
+	errMutex         sync.Mutex
 }
 
 func (channelResultSet *channelResultSet) sendSignal() {
@@ -70,10 +71,18 @@ func (channelResultSet *channelResultSet) sendSignal() {
 
 // GetError returns error from the channelResultSet.
 func (channelResultSet *channelResultSet) GetError() error {
+	return channelResultSet.loadError()
+}
+
+func (channelResultSet *channelResultSet) loadError() error {
+	channelResultSet.errMutex.Lock()
+	defer channelResultSet.errMutex.Unlock()
 	return channelResultSet.err
 }
 
 func (channelResultSet *channelResultSet) setError(err error) {
+	channelResultSet.errMutex.Lock()
+	defer channelResultSet.errMutex.Unlock()
 	channelResultSet.err = err
 }
 
@@ -166,12 +175,12 @@ func (channelResultSet *channelResultSet) Channel() chan *Result {
 // The value of ok is true if the value received was delivered by a successful send operation to the channel,
 // or false if it is a zero value generated because the channel is closed and empty.
 func (channelResultSet *channelResultSet) One() (*Result, bool, error) {
-	if channelResultSet.err != nil {
-		return nil, false, channelResultSet.err
+	if err := channelResultSet.loadError(); err != nil {
+		return nil, false, err
 	}
 	result, ok := <-channelResultSet.channel
-	if channelResultSet.err != nil {
-		return nil, false, channelResultSet.err
+	if err := channelResultSet.loadError(); err != nil {
+		return nil, false, err
 	}
 	return result, ok, nil
 }
@@ -182,7 +191,7 @@ func (channelResultSet *channelResultSet) All() ([]*Result, error) {
 	for result := range channelResultSet.channel {
 		results = append(results, result)
 	}
-	return results, channelResultSet.err
+	return results, channelResultSet.loadError()
 }
 
 func (channelResultSet *channelResultSet) addResult(r *Result) {
@@ -205,7 +214,7 @@ func (channelResultSet *channelResultSet) addResult(r *Result) {
 }
 
 func newChannelResultSetCapacity(requestID string, container *synchronizedMap, channelSize int) ResultSet {
-	return &channelResultSet{make(chan *Result, channelSize), requestID, container, "", nil, false, nil, nil, sync.Mutex{}, sync.Mutex{}}
+	return &channelResultSet{make(chan *Result, channelSize), requestID, container, "", nil, false, nil, nil, sync.Mutex{}, sync.Mutex{}, sync.Mutex{}}
 }
 
 func newChannelResultSet(requestID string, container *synchronizedMap) ResultSet {

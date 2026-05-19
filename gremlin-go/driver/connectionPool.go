@@ -99,10 +99,11 @@ func (pool *loadBalancingPool) getLeastUsedConnection() (*connection, error) {
 	var leastUsed *connection = nil
 	validConnections := make([]*connection, 0, cap(pool.connections))
 	for _, connection := range pool.connections {
-		if connection.state == established || connection.state == initialized {
+		state := connection.loadState()
+		if state == established || state == initialized {
 			validConnections = append(validConnections, connection)
 		}
-		if connection.state == established {
+		if state == established {
 			// Set the least used connection.
 			if leastUsed == nil || connection.activeResults() < leastUsed.activeResults() {
 				leastUsed = connection
